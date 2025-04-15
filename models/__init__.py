@@ -1,5 +1,3 @@
-print("🔁 Registrando todos los modelos...")
-
 from .usuario import Usuario
 from .organizacion import Organizacion
 from .proyecto import Proyecto

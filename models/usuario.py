@@ -1,9 +1,4 @@
 from neomodel import StructuredNode, StringProperty, DateProperty, BooleanProperty, UniqueIdProperty, RelationshipTo
-from .organizacion import Organizacion
-from .proyecto import Proyecto
-from .rol import Rol
-from .tarea import Tarea
-from .solicitud_cambio import SolicitudCambio
 
 class Usuario(StructuredNode):
     uid = UniqueIdProperty()

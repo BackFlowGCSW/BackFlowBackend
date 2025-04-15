@@ -1,6 +1,5 @@
 from neomodel import StructuredNode, StringProperty, DateProperty, BooleanProperty, UniqueIdProperty, RelationshipTo, RelationshipFrom
 
-
 class Organizacion(StructuredNode):
     uid = UniqueIdProperty()
     nombre = StringProperty(required=True)

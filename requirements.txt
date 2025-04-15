@@ -1,5 +1,6 @@
 fastapi
 uvicorn
-neo4j
 pydantic
 python-dotenv
+pip install passlib[bcrypt]
+neomodel
