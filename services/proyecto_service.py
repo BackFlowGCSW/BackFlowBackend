@@ -1,4 +1,4 @@
-from utils.db import run_query
+from config.db import run_query
 from models.proyecto import ProyectoCreate
 
 

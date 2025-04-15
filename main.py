@@ -1,6 +1,16 @@
-from fastapi import FastAPI
-from routes import proyectos
+import config.db
 
-app = FastAPI()
+from services.usuario_service import UsuarioService
 
-app.include_router(proyectos.router, prefix="/proyectos", tags=["Proyectos"])
+if __name__ == "__main__":
+    user_data = {
+        "nombre": "Carlos Gómez",
+        "correo": "carlos@tekno.com",
+        "password_hash": "hash789"
+    }
+
+    try:
+        usuario = UsuarioService.crear_usuario(user_data)
+        print(f"✅ Usuario creado: {usuario.nombre}")
+    except Exception as e:
+        print(f"❌ Error: {e}")
