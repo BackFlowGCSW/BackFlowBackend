@@ -9,7 +9,7 @@ class Tarea(StructuredNode):
     fecha_inicio = DateProperty()
     fecha_fin = DateProperty()
     prioridad = StringProperty(choices=[("Alta", "Alta"), ("Media", "Media"), ("Baja", "Baja")])
-    estado = StringProperty(choices=[("En proceso", "En proceso"), ("Finalizada", "Finalizada")])
+    estado = StringProperty(choices=[("Planificada","Planificada"),("En proceso", "En proceso"), ("Finalizada", "Finalizada"),("En Revision", "En Revision"),("Cancelada", "Cancelada")])
 
     asignado_a = RelationshipFrom('models.usuario.Usuario', 'ASIGNADO_A')
     pertenece_a_fase = RelationshipFrom('models.fase.Fase', 'TIENE')
