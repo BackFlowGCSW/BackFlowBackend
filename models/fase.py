@@ -8,5 +8,5 @@ class Fase(StructuredNode):
     fecha_inicio = DateProperty()
     fecha_fin = DateProperty()
 
-    tareas = RelationshipTo('Tarea', 'TIENE')
-    pertenece_a = RelationshipFrom('Proyecto', 'TIENE')
+    tareas = RelationshipTo('models.tarea.Tarea', 'TIENE')
+    pertenece_a = RelationshipFrom('models.proyecto.Proyecto', 'TIENE')

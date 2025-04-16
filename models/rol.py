@@ -5,5 +5,5 @@ class Rol(StructuredNode):
     nombre = StringProperty(required=True)
     descripcion = StringProperty()
 
-    asignado_a = RelationshipFrom('Usuario', 'CUMPLE_ROL')
-    parte_de = RelationshipTo('Proyecto', 'PARTE_DE')
+    asignado_a = RelationshipFrom('models.usuario.Usuario', 'CUMPLE_ROL')
+    parte_de = RelationshipTo('models.proyecto.Proyecto', 'PARTE_DE')

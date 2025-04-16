@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import Optional
+from datetime import date
 from services.proyecto_service import ProyectoService
 from utils.security import get_current_user
 
@@ -8,12 +9,11 @@ router = APIRouter(prefix="/proyectos", tags=["Proyectos"])
 
 # ----------- SCHEMAS -----------
 
-
 class ProyectoCreate(BaseModel):
     nombre: str
     descripcion: Optional[str] = ""
-    fecha_inicio: Optional[str] = None
-    fecha_fin: Optional[str] = None
+    fecha_inicio: Optional[date] = None
+    fecha_fin: Optional[date] = None
     metodologia: str
     repositorio: Optional[str] = ""
     organizacion_id: str
@@ -22,10 +22,9 @@ class ProyectoCreate(BaseModel):
 class ProyectoUpdate(BaseModel):
     nombre: Optional[str]
     descripcion: Optional[str]
-    fecha_inicio: Optional[str]
-    fecha_fin: Optional[str]
+    fecha_inicio: Optional[date]
+    fecha_fin: Optional[date]
     repositorio: Optional[str]
-
 
 # ----------- RUTAS ------------
 

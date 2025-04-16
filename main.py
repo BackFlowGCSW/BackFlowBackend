@@ -10,3 +10,7 @@ app = FastAPI()
 app.include_router(usuarios_router)
 app.include_router(organizaciones_router)
 app.include_router(proyectos_router)
+
+@app.get("/")
+def root():
+    return {"message": "API de Gestión de Proyectos"}

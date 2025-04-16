@@ -8,5 +8,5 @@ class Organizacion(StructuredNode):
     creado_por = StringProperty(required=True)
     activa = BooleanProperty(default=True)
 
-    tiene_proyecto = RelationshipTo('Proyecto', 'TIENE')
-    tiene_miembros = RelationshipFrom('Usuario', 'PERTENECE_A')
+    tiene_proyecto = RelationshipTo('models.proyecto.Proyecto', 'TIENE')
+    tiene_miembros = RelationshipFrom('models.usuario.Usuario', 'PERTENECE_A')

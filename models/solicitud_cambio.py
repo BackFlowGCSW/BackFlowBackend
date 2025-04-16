@@ -23,5 +23,5 @@ class SolicitudCambio(StructuredNode):
     creada_por = StringProperty(required=True)
     proyecto_id = StringProperty(required=True)
 
-    asignado_a = RelationshipFrom('Usuario', 'ASIGNADO_A')
-    vinculada_a = RelationshipTo('Tarea', 'VINCULADA_A')
+    asignado_a = RelationshipFrom('models.usuario.Usuario', 'ASIGNADO_A')
+    vinculada_a = RelationshipTo('models.tarea.Tarea', 'VINCULADA_A')

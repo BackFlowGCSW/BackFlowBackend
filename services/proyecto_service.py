@@ -4,8 +4,9 @@ from fastapi import HTTPException
 from factory.proyecto.proyecto_factory import ProyectoFactory
 from typing import List
 from models.organizacion import Organizacion
+from models.rol import Rol
 from models.usuario import Usuario
-
+from neomodel import db
 
 class ProyectoService:
     @staticmethod
@@ -18,7 +19,7 @@ class ProyectoService:
             data["organizacion_id"])
         ProyectoService._validar_nombre_proyecto_unico(
             data["nombre"], organizacion)
-        ProyectoService._validar_usuario(data["creado_por"])
+        usuario = ProyectoService._validar_usuario(data["creado_por"])
 
         if "metodologia" not in data:
             raise HTTPException(
@@ -35,9 +36,11 @@ class ProyectoService:
         proyecto.creado_por = data["creado_por"]
         proyecto.save()
 
+        proyecto.miembros.connect(usuario)
         ProyectoService._asociar_organizacion(proyecto, organizacion)
         ProyectoService._asociar_fases(proyecto, creador)
         ProyectoService._asociar_roles(proyecto, creador)
+        ProyectoService._asignar_rol_a_creador(proyecto, usuario)
 
         print(f"✅ Proyecto '{proyecto.nombre}' creado correctamente")
         return proyecto
@@ -133,3 +136,25 @@ class ProyectoService:
         roles = creador.crear_roles()
         for rol in roles:
             proyecto.tiene_rol.connect(rol)
+
+    @staticmethod
+    def _asignar_rol_a_creador(proyecto: Proyecto, usuario: Usuario):
+        """
+        Asigna automáticamente un rol al creador según la metodología del proyecto.
+        """
+        nombre_rol = {
+            "SCRUM": "Scrum Master",
+            "RUP": "Administrador de Configuración"
+        }.get(proyecto.metodologia.upper(), "Líder")
+
+        rol = next(
+            (r for r in proyecto.tiene_rol.all() if r.nombre.lower() == nombre_rol.lower()),
+            None
+        )
+
+        if rol:
+            usuario.cumple_rol.connect(rol)
+            print(f"✅ Rol '{nombre_rol}' asignado a {usuario.nombre}")
+        else:
+            print(f"⚠️ No se encontró el rol '{nombre_rol}' en el proyecto '{proyecto.nombre}'")
+

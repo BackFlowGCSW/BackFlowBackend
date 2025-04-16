@@ -8,8 +8,8 @@ class Usuario(StructuredNode):
     fecha_registro = DateProperty(required=True)
     activo = BooleanProperty(default=True)
 
-    pertenece_a = RelationshipTo('Organizacion', 'PERTENECE_A')
-    miembro_de = RelationshipTo('Proyecto', 'MIEMBRO_DE')
-    cumple_rol = RelationshipTo('Rol', 'CUMPLE_ROL')
-    asignado_a = RelationshipTo('Tarea', 'ASIGNADO_A')
-    asignado_a_solicitud = RelationshipTo('SolicitudCambio', 'ASIGNADO_A')
+    pertenece_a = RelationshipTo('models.organizacion.Organizacion', 'PERTENECE_A')
+    miembro_de = RelationshipTo('models.proyecto.Proyecto', 'MIEMBRO_DE')
+    cumple_rol = RelationshipTo('models.rol.Rol', 'CUMPLE_ROL')
+    asignado_a = RelationshipTo('models.tarea.Tarea', 'ASIGNADO_A')
+    asignado_a_solicitud = RelationshipTo('models.solicitud_cambio.SolicitudCambio', 'ASIGNADO_A')
