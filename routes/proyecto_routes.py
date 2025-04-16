@@ -18,6 +18,9 @@ class ProyectoCreate(BaseModel):
     repositorio: Optional[str] = ""
     organizacion_id: str
 
+class InvitacionSimple(BaseModel):
+    usuario_id: str
+    rol: str = None
 
 class ProyectoUpdate(BaseModel):
     nombre: Optional[str]
@@ -48,6 +51,9 @@ def listar_proyectos():
 def editar_proyecto(uid: str, data: ProyectoUpdate):
     return ProyectoService.editar_proyecto(uid, data.dict(exclude_unset=True))
 
+@router.post("/{proyecto_id}/invitar")
+def invitar_usuario(proyecto_id: str, data: InvitacionSimple):
+    return ProyectoService.invitar_usuario(proyecto_id, data.usuario_id, data.rol)
 
 @router.delete("/{uid}")
 def deshabilitar_proyecto(uid: str):

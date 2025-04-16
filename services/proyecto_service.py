@@ -8,6 +8,7 @@ from models.rol import Rol
 from models.usuario import Usuario
 from neomodel import db
 
+
 class ProyectoService:
     @staticmethod
     def crear_proyecto(data: dict) -> Proyecto:
@@ -96,7 +97,44 @@ class ProyectoService:
         proyecto.save()
         return {"mensaje": "Proyecto deshabilitado"}
 
+    @staticmethod
+    def invitar_usuario(proyecto_id: str, usuario_id: str, rol_nombre: str = None):
+        proyecto = Proyecto.nodes.get_or_none(uid=proyecto_id)
+        if not proyecto:
+            raise HTTPException(status_code=404, detail="Proyecto no encontrado")
+
+        usuario = Usuario.nodes.get_or_none(uid=usuario_id)
+        if not usuario:
+            raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+        if usuario in proyecto.miembros.all():
+            raise HTTPException(
+                status_code=400, detail="El usuario ya es miembro del proyecto")
+
+        usuario.miembro_de.connect(proyecto)
+
+        if rol_nombre:
+            query = """
+            MATCH (r:Rol)-[:PARTE_DE]->(p:Proyecto {uid: $proyecto_id})
+            WHERE toLower(r.nombre) = toLower($rol)
+            RETURN r
+            """
+            results, _ = db.cypher_query(query, {
+                "proyecto_id": proyecto_id,
+                "rol": rol_nombre
+            })
+
+            if results:
+                rol_node = Rol.inflate(results[0][0])
+                usuario.cumple_rol.connect(rol_node)
+            else:
+                raise HTTPException(
+                    status_code=404, detail=f"Rol '{rol_nombre}' no encontrado en el proyecto")
+
+        return {"mensaje": "Usuario vinculado correctamente al proyecto"}
+
     # ----------- Metodos Privados --------------
+
     @staticmethod
     def _validar_organizacion(org_id: str) -> Organizacion:
         org = Organizacion.nodes.get_or_none(uid=org_id)
@@ -148,7 +186,8 @@ class ProyectoService:
         }.get(proyecto.metodologia.upper(), "Líder")
 
         rol = next(
-            (r for r in proyecto.tiene_rol.all() if r.nombre.lower() == nombre_rol.lower()),
+            (r for r in proyecto.tiene_rol.all()
+             if r.nombre.lower() == nombre_rol.lower()),
             None
         )
 
@@ -156,5 +195,5 @@ class ProyectoService:
             usuario.cumple_rol.connect(rol)
             print(f"✅ Rol '{nombre_rol}' asignado a {usuario.nombre}")
         else:
-            print(f"⚠️ No se encontró el rol '{nombre_rol}' en el proyecto '{proyecto.nombre}'")
-
+            print(
+                f"⚠️ No se encontró el rol '{nombre_rol}' en el proyecto '{proyecto.nombre}'")
