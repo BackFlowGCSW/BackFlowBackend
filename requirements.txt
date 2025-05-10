@@ -2,5 +2,7 @@ fastapi
 uvicorn
 pydantic
 python-dotenv
-pip install passlib[bcrypt]
+passlib[bcrypt]
 neomodel
+python-jose[cryptography]
+python-multipart

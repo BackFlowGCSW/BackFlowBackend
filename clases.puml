@@ -1,0 +1,191 @@
+@startuml DiagramaClases
+
+skinparam classAttributeIconSize 0
+skinparam classFontSize 12
+
+package "Models"{
+    class Usuario {
+        +uid: uuid
+        +nombre: str
+        +correo: str
+        +password_hash: str
+        +fecha_registro: date
+        +activo: bool
+    }
+    class Tarea {
+        +uid: uuid
+        +titulo: str
+        +description: str
+        +fecha_creacion: date
+        +fecha_inicio: date
+        +fecha_fin: date
+        +prioridad: enum
+        +estado: enum
+    }
+
+    class SolicitudCambio {
+        +uid: uuid
+        +fecha_creacion: date
+        +objetivo: str
+        +description: str
+        +elemento: str
+        +impacto: str
+        +esfuerzo: str
+        +estado: enum
+        +observacion: str
+        +fecha_cierre: date
+        +creada_por: str
+        +proyecto_id: str
+    }
+
+    class Rol {
+        +uid: uuid
+        +nombre: str
+        +descripcion: str
+    }
+
+    class Proyecto {
+        +uid: uuid
+        +nombres: str
+        +descripcion: str
+        +fecha_creacion: date
+        +fecha_inicio: date
+        +fecha_fin: date
+        +metodologia: str
+        +repositorio: str
+        +activo: bool
+        +creado_por: str
+    }
+
+
+    class Organizacion {
+        +uid: uuid
+        +nombre: str
+        +descripcion: str
+        +fecha_creacion: date
+        +creador_por: str
+        +activa: bool
+    }
+
+
+    class Fase {
+        +uid: uuid
+        +nombre: str
+        +descripcion: str
+        +fecha_inicio: date
+        +fecha_fin: date
+    }
+}
+
+package "Services" {
+    class OrganizacionService {
+        +crear_organizacion(data): Organizacion
+        +listar_organizaciones(): List[Organizacion]
+        +editar_organizacion(uid, data): Organizacion
+        +deshabilitar_organizacion(id): str
+        -validar_usuario(id): Usuario
+    }
+
+    class ProyectoService {
+        +crear_proyecto(data): Proyecto
+        +listar_proyectos(): List[Proyecto]
+        +editar_proyecto(uid, data): Proyecto
+        +deshabilitar_proyecto(uid): str
+        +invitar_usuario(proyecto_id, usuario_id, rol_nombre): str
+        -validar_usuario(id): Usuario
+        -validar_organizacion(org_id): Organizacion
+        -validar_nombre_proyecto_unico(nombre,org): HttpException
+        -asociar_organizacion(proyecto, org): void
+        -asociar_fases(proyecto, creador): void
+        -asociar_roles(proyecto, creador): void
+        -asignar_rol_a_creador(proyecto, usuario):str
+    }
+
+    class TareaService {
+        +PRIORIDADES_VALIDAS: List[str]
+        +ESTADOS_VALIDOS: List[str]
+        +crear_tarea(data): Tarea
+        +editar_tareas(uid,data): str
+        +filtrar_por_prioridad(prioridad): List[Tarea]
+        +tareas_por_proyecto(proyecto_id): List[Tarea]
+        +tareas_por_fase(fase_id): List[Tarea]
+        +actualizar_tarea(uid,nuevo_estado): str
+    }
+
+    class UsuarioService {
+        +crear_usuario(usuario_data): Usuario
+        +listar_usuarios(): List[Usuario]
+        +login(data): json
+        +cerrar_sesion(): str
+    }
+
+}
+
+
+package "Factories"{
+    interface CreadorProyecto {
+        +crear_proyecto(data): Proyecto
+        +crear_fases(): List[Fase]
+        +crear_roles(): List[Rol]
+    }
+
+    class CreadorRup {
+        +crear_proyecto(data): Proyecto
+        +crear_fases(): List[Fase]
+        +crear_roles(): List[Rol]
+    }
+
+
+    class CreadorScrum {
+        +crear_proyecto(data): Proyecto
+        +crear_fases(): List[Fase]
+        +crear_roles(): List[Rol]
+    }
+
+
+    class ProyectoFactory {
+        +get_creador(metodologia: str): CreadorProyecto
+    }
+
+}
+
+package "Utils"{
+    class Security {
+        +verificar_password()
+        +hashear_password()
+        +crear_token()
+        +verificar_token()
+        +get_current_user()
+    }
+}
+
+package "Database"{
+    class DBSessionProvider {
+        +config(): Session
+    }
+}
+
+ProyectoFactory --> CreadorProyecto
+CreadorRup ..|> CreadorProyecto
+CreadorScrum ..|> CreadorProyecto
+Usuario --> Rol:cumple_rol
+Usuario --> Organizacion:pertenece_a
+Organizacion --> Proyecto:tiene
+Usuario --> Proyecto:miembro_de
+Proyecto --> Fase:tiene
+Proyecto --> Tarea:tiene
+SolicitudCambio --> Usuario:asignada_a
+SolicitudCambio --> Tarea:vinculada_a
+Tarea --> Usuario:asignada_a
+
+UsuarioService --> Usuario
+OrganizacionService --> Organizacion
+ProyectoService --> Proyecto
+TareaService --> Tarea
+
+ProyectoService --> ProyectoFactory
+DBSessionProvider --> Services
+
+UsuarioService --> Security
+
+@enduml
