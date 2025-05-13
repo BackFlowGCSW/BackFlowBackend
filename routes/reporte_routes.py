@@ -3,11 +3,11 @@ from services.reporte_service import ReporteService
 
 router = APIRouter(prefix="/reportes", tags=["Reportes"])
 
-@router.get("/estadisticas")
-def obtener_estadisticas():
-    return ReporteService.generar_estadisticas()
+@router.get("/estadisticas/{uid_proyecto}")
+def obtener_estadisticas(uid_proyecto: str):
+    return ReporteService.generar_estadisticas(uid_proyecto)
 
-@router.get("/pdf")
-def exportar_estadisticas_pdf():
-    estadisticas = ReporteService.generar_estadisticas()
+@router.get("/pdf/{uid_proyecto}")
+def exportar_estadisticas_pdf(uid_proyecto: str):
+    estadisticas = ReporteService.generar_estadisticas(uid_proyecto)
     return ReporteService.exportar_pdf(estadisticas)

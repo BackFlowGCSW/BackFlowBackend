@@ -2,35 +2,42 @@ from fpdf import FPDF
 from datetime import date
 from io import BytesIO
 from fastapi.responses import StreamingResponse
+from fastapi import HTTPException
 from models.proyecto import Proyecto
 from models.solicitud_cambio import SolicitudCambio
 from models.tarea import Tarea
 
 class ReporteService:
     @staticmethod
-    def generar_estadisticas() -> dict:
-        total_proyectos = len(Proyecto.nodes.all())
-        total_solicitudes = len(SolicitudCambio.nodes.all())
-        total_tareas = len(Tarea.nodes.all())
+    def generar_estadisticas(uid_proyecto: str) -> dict:
+        proyecto = Proyecto.nodes.get_or_none(uid=uid_proyecto)
+        if not proyecto:
+            raise HTTPException(status_code=404, detail="Proyecto no encontrado")
+
+        tareas = proyecto.tareas.all()
+        total_tareas = len(tareas)
+
+        solicitudes = SolicitudCambio.nodes.filter(proyecto_id=uid_proyecto)
+        total_solicitudes = len(solicitudes)
 
         solicitudes_por_estado = {
-            estado: len(SolicitudCambio.nodes.filter(estado=estado))
+            estado: len([s for s in solicitudes if s.estado == estado])
             for estado in ["Pendiente", "Aprobada", "Rechazada", "Cerrada"]
         }
 
         tareas_por_estado = {
-            estado: len(Tarea.nodes.filter(estado=estado))
+            estado: len([t for t in tareas if t.estado == estado])
             for estado in ["Planificada", "En proceso", "En Revision", "Finalizada", "Cancelada"]
         }
 
         tareas_por_prioridad = {
-            prioridad: len(Tarea.nodes.filter(prioridad=prioridad))
+            prioridad: len([t for t in tareas if t.prioridad == prioridad])
             for prioridad in ["Alta", "Media", "Baja"]
         }
 
         return {
             "fecha": str(date.today()),
-            "total_proyectos": total_proyectos,
+            "proyecto": proyecto.nombre,
             "total_solicitudes": total_solicitudes,
             "total_tareas": total_tareas,
             "solicitudes_por_estado": solicitudes_por_estado,
@@ -44,7 +51,7 @@ class ReporteService:
         pdf.add_page()
         pdf.set_font("Arial", size=12)
 
-        pdf.cell(200, 10, txt="Reporte de Estadísticas del Sistema", ln=True, align="C")
+        pdf.cell(200, 10, txt="Reporte de Estadísticas del Proyecto", ln=True, align="C")
         pdf.ln(10)
 
         def agregar_seccion(titulo, contenido):
@@ -56,9 +63,9 @@ class ReporteService:
             pdf.ln(5)
 
         pdf.cell(200, 10, txt=f"Fecha del reporte: {estadisticas['fecha']}", ln=True)
+        pdf.cell(200, 10, txt=f"Proyecto: {estadisticas['proyecto']}", ln=True)
         pdf.ln(5)
 
-        pdf.cell(200, 10, txt=f"Total de Proyectos: {estadisticas['total_proyectos']}", ln=True)
         pdf.cell(200, 10, txt=f"Total de Solicitudes de Cambio: {estadisticas['total_solicitudes']}", ln=True)
         pdf.cell(200, 10, txt=f"Total de Tareas: {estadisticas['total_tareas']}", ln=True)
         pdf.ln(10)
