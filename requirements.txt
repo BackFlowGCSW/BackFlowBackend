@@ -6,3 +6,4 @@ passlib[bcrypt]
 neomodel
 python-jose[cryptography]
 python-multipart
+fpdf2
