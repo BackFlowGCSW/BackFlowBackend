@@ -8,7 +8,6 @@ from models.solicitud_cambio import SolicitudCambio
 class ReporteService:
     @staticmethod
     def generar_estadisticas() -> dict:
-        # Datos simulados si tu BD está vacía
         total_proyectos = len(Proyecto.nodes.all())
         total_solicitudes = len(SolicitudCambio.nodes.all())
         solicitudes_pendientes = len(SolicitudCambio.nodes.filter(estado="Pendiente"))
