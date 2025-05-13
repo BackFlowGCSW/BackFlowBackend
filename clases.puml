@@ -79,19 +79,31 @@ package "Models"{
 
 package "Services" {
     class OrganizacionService {
-        +crear_organizacion(data): Organizacion
+        +crear_organizacion(data: OrganizacionCreate): Organizacion
         +listar_organizaciones(): List[Organizacion]
-        +editar_organizacion(uid, data): Organizacion
-        +deshabilitar_organizacion(id): str
-        -validar_usuario(id): Usuario
+        +editar_organizacion(uid, data: OrganizacionUpdate): Organizacion
+        +deshabilitar_organizacion(uid): str
+        -validar_usuario(uid): Usuario
+    }
+
+    class SolicitudCambioService{
+        +agregar_solicitud(data: SolicitudCambioCreate): SolicitudCambio
+        +cambiar_estado(uid, data: SolicitudCambioUpdate): SolicitudCambio
+        -validar_usuario(uid): Usuario
+
+    }
+
+    class ReporteService{
+        +generar_estadisticas(uid_proyecto): dict
+        +exportar_pdf(uid_proyecto): StreamingResponse
     }
 
     class ProyectoService {
-        +crear_proyecto(data): Proyecto
+        +crear_proyecto(data: ProyectoCreate): Proyecto
         +listar_proyectos(): List[Proyecto]
-        +editar_proyecto(uid, data): Proyecto
+        +editar_proyecto(uid, data: ProyectoUpdate): Proyecto
         +deshabilitar_proyecto(uid): str
-        +invitar_usuario(proyecto_id, usuario_id, rol_nombre): str
+        +invitar_usuario(proyecto_id, data: InvitacionSimple): str
         -validar_usuario(id): Usuario
         -validar_organizacion(org_id): Organizacion
         -validar_nombre_proyecto_unico(nombre,org): HttpException
@@ -104,18 +116,18 @@ package "Services" {
     class TareaService {
         +PRIORIDADES_VALIDAS: List[str]
         +ESTADOS_VALIDOS: List[str]
-        +crear_tarea(data): Tarea
-        +editar_tareas(uid,data): str
+        +crear_tarea(data: TareaCreate): Tarea
+        +editar_tareas(uid,data: TareaUpdate): str
         +filtrar_por_prioridad(prioridad): List[Tarea]
         +tareas_por_proyecto(proyecto_id): List[Tarea]
         +tareas_por_fase(fase_id): List[Tarea]
-        +actualizar_tarea(uid,nuevo_estado): str
+        +actualizar_tarea(uid,data: EstadoUpdate): str
     }
 
     class UsuarioService {
-        +crear_usuario(usuario_data): Usuario
+        +crear_usuario(data: UsuarioCreate): Usuario
         +listar_usuarios(): List[Usuario]
-        +login(data): json
+        +login(data: LoginRequest): json
         +cerrar_sesion(): str
     }
 
@@ -124,20 +136,72 @@ package "Services" {
 
 package "Factories"{
     interface CreadorProyecto {
-        +crear_proyecto(data): Proyecto
+        +crear_proyecto(data: ProyectoCreate): Proyecto
         +crear_fases(): List[Fase]
         +crear_roles(): List[Rol]
     }
 
-    class CreadorRup {
-        +crear_proyecto(data): Proyecto
+    class CreadorProyectoRUP {
+        +crear_proyecto(data: ProyectoCreate): Proyecto
         +crear_fases(): List[Fase]
         +crear_roles(): List[Rol]
     }
 
 
-    class CreadorScrum {
-        +crear_proyecto(data): Proyecto
+    class CreadorProyectoAUP {
+        +crear_proyecto(data: ProyectoCreate): Proyecto
+        +crear_fases(): List[Fase]
+        +crear_roles(): List[Rol]
+    }
+
+    class CreadorProyectoSCRUM {
+        +crear_proyecto(data: ProyectoCreate): Proyecto
+        +crear_fases(): List[Fase]
+        +crear_roles(): List[Rol]
+    }
+
+    class CreadorProyectoCascada {
+        +crear_proyecto(data: ProyectoCreate): Proyecto
+        +crear_fases(): List[Fase]
+        +crear_roles(): List[Rol]
+    }
+    class CreadorProyectoCrystal {
+        +crear_proyecto(data: ProyectoCreate): Proyecto
+        +crear_fases(): List[Fase]
+        +crear_roles(): List[Rol]
+    }
+    class CreadorProyectoDevOps {
+        +crear_proyecto(data: ProyectoCreate): Proyecto
+        +crear_fases(): List[Fase]
+        +crear_roles(): List[Rol]
+    }
+    class CreadorProyectoDSDM {
+        +crear_proyecto(data: ProyectoCreate): Proyecto
+        +crear_fases(): List[Fase]
+        +crear_roles(): List[Rol]
+    }
+    class CreadorProyectoFDD {
+        +crear_proyecto(data: ProyectoCreate): Proyecto
+        +crear_fases(): List[Fase]
+        +crear_roles(): List[Rol]
+    }
+    class CreadorProyectoKANBAN {
+        +crear_proyecto(data: ProyectoCreate): Proyecto
+        +crear_fases(): List[Fase]
+        +crear_roles(): List[Rol]
+    }
+    class CreadorProyectoLean {
+        +crear_proyecto(data: ProyectoCreate): Proyecto
+        +crear_fases(): List[Fase]
+        +crear_roles(): List[Rol]
+    }
+    class CreadorProyectoSafe {
+        +crear_proyecto(data: ProyectoCreate): Proyecto
+        +crear_fases(): List[Fase]
+        +crear_roles(): List[Rol]
+    }
+    class CreadorProyectoXP {
+        +crear_proyecto(data: ProyectoCreate): Proyecto
         +crear_fases(): List[Fase]
         +crear_roles(): List[Rol]
     }
@@ -166,8 +230,18 @@ package "Database"{
 }
 
 ProyectoFactory --> CreadorProyecto
-CreadorRup ..|> CreadorProyecto
-CreadorScrum ..|> CreadorProyecto
+CreadorProyectoRUP ..|> CreadorProyecto
+CreadorProyectoSCRUM ..|> CreadorProyecto
+CreadorProyectoXP ..|> CreadorProyecto
+CreadorProyectoAUP ..|> CreadorProyecto
+CreadorProyectoCascada ..|> CreadorProyecto
+CreadorProyectoCrystal ..|> CreadorProyecto
+CreadorProyectoDevOps ..|> CreadorProyecto
+CreadorProyectoDSDM ..|> CreadorProyecto
+CreadorProyectoFDD ..|> CreadorProyecto
+CreadorProyectoKANBAN ..|> CreadorProyecto
+CreadorProyectoLean ..|> CreadorProyecto
+CreadorProyectoSafe ..|> CreadorProyecto
 Usuario --> Rol:cumple_rol
 Usuario --> Organizacion:pertenece_a
 Organizacion --> Proyecto:tiene
@@ -187,5 +261,7 @@ ProyectoService --> ProyectoFactory
 DBSessionProvider --> Services
 
 UsuarioService --> Security
-
+ReporteService --> SolicitudCambio
+ReporteService --> Proyecto
+SolicitudCambioService --> SolicitudCambio
 @enduml
