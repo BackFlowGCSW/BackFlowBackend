@@ -44,7 +44,7 @@ class ReporteService:
         pdf.add_page()
         pdf.set_font("Arial", size=12)
 
-        pdf.cell(200, 10, txt="📊 Reporte de Estadísticas del Sistema", ln=True, align="C")
+        pdf.cell(200, 10, txt="Reporte de Estadísticas del Sistema", ln=True, align="C")
         pdf.ln(10)
 
         def agregar_seccion(titulo, contenido):
