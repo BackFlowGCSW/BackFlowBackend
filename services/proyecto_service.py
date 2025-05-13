@@ -182,12 +182,23 @@ class ProyectoService:
         """
         nombre_rol = {
             "SCRUM": "Scrum Master",
-            "RUP": "Administrador de Configuración"
+            "RUP": "Administrador de Configuración",
+            "XP": "Coach",
+            "KANBAN": "Líder de flujo",
+            "CASCADA": "Gerente de Proyecto",
+            "WATERFALL": "Gerente de Proyecto",
+            "LEAN": "Líder de mejora continua",
+            "DSDM": "Facilitador",
+            "FDD": "Desarrollador principal",
+            "CRYSTAL": "Líder técnico",
+            "AUP": "Analista",
+            "SAFE": "Release Train Engineer",
+            "DEVOPS": "Ingeniero DevOps"
         }.get(proyecto.metodologia.upper(), "Líder")
 
         rol = next(
             (r for r in proyecto.tiene_rol.all()
-             if r.nombre.lower() == nombre_rol.lower()),
+            if r.nombre.lower() == nombre_rol.lower()),
             None
         )
 
