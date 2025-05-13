@@ -7,7 +7,7 @@ router = APIRouter(prefix="/reportes", tags=["Reportes"])
 def obtener_estadisticas():
     return ReporteService.generar_estadisticas()
 
-@router.get("/exportar-pdf")
-def exportar_pdf():
+@router.get("/pdf")
+def exportar_estadisticas_pdf():
     estadisticas = ReporteService.generar_estadisticas()
     return ReporteService.exportar_pdf(estadisticas)
