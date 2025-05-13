@@ -6,22 +6,41 @@ from models.tarea import Tarea
 
 
 class SolicitudCambioService:
+    ELEMENTOS_VALIDOS = {"Requisito", "Diseño", "Código", "Prueba", "Otro"}
+    IMPACTOS_VALIDOS = {"Alto", "Medio", "Bajo"}
+    ESFUERZOS_VALIDOS = {"Alto", "Medio", "Bajo"}
+
     @staticmethod
     def agregar_solicitud(data: dict) -> dict:
         """
         Crea una nueva solicitud de cambio, la vincula a un usuario creador y opcionalmente a una tarea.
         """
+
         # Validar existencia del usuario creador
         usuario = SolicitudCambioService._validar_usuario(data["creada_por"])
+
+        # Validar campos controlados
+        elemento = data.get("elemento", "")
+        impacto = data.get("impacto", "")
+        esfuerzo = data.get("esfuerzo", "")
+
+        if elemento not in SolicitudCambioService.ELEMENTOS_VALIDOS:
+            raise HTTPException(status_code=400, detail=f"Elemento inválido. Valores permitidos: {', '.join(SolicitudCambioService.ELEMENTOS_VALIDOS)}")
+
+        if impacto not in SolicitudCambioService.IMPACTOS_VALIDOS:
+            raise HTTPException(status_code=400, detail=f"Impacto inválido. Valores permitidos: {', '.join(SolicitudCambioService.IMPACTOS_VALIDOS)}")
+
+        if esfuerzo not in SolicitudCambioService.ESFUERZOS_VALIDOS:
+            raise HTTPException(status_code=400, detail=f"Esfuerzo inválido. Valores permitidos: {', '.join(SolicitudCambioService.ESFUERZOS_VALIDOS)}")
 
         # Crear la solicitud
         solicitud = SolicitudCambio(
             fecha_creacion=date.today(),
             objetivo=data.get("objetivo", ""),
             descripcion=data.get("descripcion", ""),
-            elemento=data.get("elemento", ""),
-            impacto=data.get("impacto", ""),
-            esfuerzo=data.get("esfuerzo", ""),
+            elemento=elemento,
+            impacto=impacto,
+            esfuerzo=esfuerzo,
             estado="Pendiente",
             observacion="",
             creada_por=data["creada_por"],
