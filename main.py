@@ -17,7 +17,6 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-# CORS: en DEV puedes usar ["*"], en PROD especifica tus dominios
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -30,7 +29,6 @@ app.add_middleware(
 async def ignore_favicon():
     return Response(status_code=204)
 
-# Incluimos todos los routers
 app.include_router(usuarios_router)
 app.include_router(organizaciones_router)
 app.include_router(proyectos_router)
